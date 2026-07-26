@@ -28,10 +28,10 @@ import { Calendar, MoreHorizontal, Plus } from "lucide-react";
 import { mockTasks } from "@/lib/data";
 
 const COLUMNS: { id: Task["status"]; title: string }[] = [
-  { id: "todo", title: "To Do" },
-  { id: "in-progress", title: "In Progress" },
-  { id: "review", title: "Review" },
-  { id: "done", title: "Done" },
+  { id: "TODO", title: "To Do" },
+  { id: "IN_PROGRESS", title: "In Progress" },
+  { id: "REVIEW", title: "Review" },
+  { id: "DONE", title: "Done" },
 ];
 
 function KanbanCard({
@@ -42,10 +42,10 @@ function KanbanCard({
   isDragging?: boolean;
 }) {
   const priorityColors = {
-    low: "border-l-gray-400",
-    medium: "border-l-blue-400",
-    high: "border-l-amber-400",
-    urgent: "border-l-red-500",
+    LOW: "border-l-gray-400",
+    MEDIUM: "border-l-blue-400",
+    HIGH: "border-l-amber-400",
+    URGENT: "border-l-red-500",
   };
 
   return (
@@ -80,7 +80,7 @@ function KanbanCard({
       </div>
 
       <div className="flex justify-between items-center mt-auto">
-        <AvatarGroup users={[task.assignee]} max={1} />
+        <AvatarGroup users={[task.assignee!]} max={1} />
         <div className="flex items-center gap-1 text-xs text-muted-foreground font-medium">
           <Calendar className="w-3.5 h-3.5" />
           {format(new Date(task.dueDate), "MMM d")}

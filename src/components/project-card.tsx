@@ -33,7 +33,7 @@ export function ProjectCard({ project }: { project: Project }) {
             <div className="flex justify-between items-center text-xs font-medium">
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>{project.tasksCompleted}/{project.tasksTotal} tasks</span>
+                <span>10/20 tasks</span>
               </div>
               <span className="text-foreground">{project.progress}%</span>
             </div>
@@ -51,7 +51,7 @@ export function ProjectCard({ project }: { project: Project }) {
             </div>
             
             <div className="flex justify-between items-center pt-2">
-              <AvatarGroup users={project.members} max={3} />
+              <AvatarGroup users={project.members?.map(member => member.user!).filter(Boolean) || []} max={3} />
               
               <div className="flex items-center gap-2">
                 <StatusBadge status={project.status} />

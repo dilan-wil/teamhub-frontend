@@ -50,7 +50,7 @@ function DeleteConfirm({
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
-    const [isPending, setIsPending] = useState(false)
+  const [isPending, setIsPending] = useState(false);
   const confirm = async () => {
     if (!task) return;
     onOpenChange(false);
@@ -105,7 +105,7 @@ export default function Tasks() {
   const filtered = tasks.filter((t) => {
     const matchSearch =
       t.title.toLowerCase().includes(search.toLowerCase()) ||
-      t.assignee.name.toLowerCase().includes(search.toLowerCase());
+      t.assignee?.name.toLowerCase().includes(search.toLowerCase());
     const matchStatus = statusFilter === "all" || t.status === statusFilter;
     const matchPriority =
       priorityFilter === "all" || t.priority === priorityFilter;
@@ -243,16 +243,16 @@ export default function Tasks() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-purple-500 text-primary-foreground text-[10px] font-bold flex items-center justify-center shrink-0">
-                            {task.assignee.avatar}
+                            {task.assignee?.avatar}
                           </div>
                           <span className="truncate max-w-[100px] text-sm">
-                            {task.assignee.name}
+                            {task.assignee?.name}
                           </span>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-muted-foreground">
                         <div className="truncate max-w-[120px] text-sm">
-                          {task.project.name}
+                          {task.project?.name}
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -260,7 +260,7 @@ export default function Tasks() {
                           className={cn(
                             "text-sm",
                             new Date(task.dueDate) < new Date() &&
-                              task.status !== "done"
+                              task.status !== "DONE"
                               ? "text-red-500 font-medium"
                               : "text-muted-foreground",
                           )}

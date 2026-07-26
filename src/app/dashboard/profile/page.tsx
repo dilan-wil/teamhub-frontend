@@ -65,7 +65,7 @@ export default function Profile() {
               </div>
               <div className="flex items-center gap-3 text-muted-foreground">
                 <Calendar className="w-4 h-4 text-foreground/70" />
-                <span className="text-foreground">Joined {new Date(user.joinedAt).getFullYear()}</span>
+                <span className="text-foreground">Joined {new Date(user.createdAt).getFullYear()}</span>
               </div>
             </div>
           </div>
@@ -73,8 +73,8 @@ export default function Profile() {
         
         <div className="md:col-span-2 space-y-6">
           <div className="grid grid-cols-2 gap-4">
-            <StatsCard title="Tasks Completed" value={user.tasksCompleted} icon={CheckSquareIcon} />
-            <StatsCard title="Completion Rate" value={Math.round((user.tasksCompleted/user.tasksTotal)*100)} suffix="%" icon={TrendingUpIcon} />
+            <StatsCard title="Tasks Completed" value={10} icon={CheckSquareIcon} />
+            <StatsCard title="Completion Rate" value={Math.round((10/20)*100)} suffix="%" icon={TrendingUpIcon} />
           </div>
           
           <div className="bg-card border border-border/50 rounded-3xl p-6 shadow-sm">

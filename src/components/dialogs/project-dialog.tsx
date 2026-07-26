@@ -39,8 +39,8 @@ const GRADIENTS = [
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   description: z.string().min(1, "Description is required"),
-  status: z.enum(["active", "completed", "on-hold", "planning"]),
-  priority: z.enum(["low", "medium", "high"]),
+  status: z.enum(["ACTIVE", "COMPLETED", "ON_HOLD", "PLANNING"]),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]),
   dueDate: z.string().min(1, "Due date is required"),
   gradient: z.string(),
   memberIds: z.array(z.string()),
@@ -141,9 +141,9 @@ function ProjectForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="LOW">Low</SelectItem>
+                  <SelectItem value="MEDIUM">Medium</SelectItem>
+                  <SelectItem value="HIGH">High</SelectItem>
                 </SelectContent>
               </Select>
             )}
@@ -254,8 +254,8 @@ export function CreateProjectDialog({
   const defaults: z.infer<typeof schema> = {
     name: "",
     description: "",
-    status: "planning",
-    priority: "medium",
+    status: "PLANNING",
+    priority: "MEDIUM",
     dueDate: "",
     gradient: GRADIENTS[0].value,
     memberIds: [],
@@ -320,7 +320,7 @@ export function EditProjectDialog({
       ? new Date(project.dueDate).toISOString().split("T")[0]
       : "",
     gradient: project.gradient || GRADIENTS[0].value,
-    memberIds: project.members.map((m) => m.id),
+    memberIds: project.members!.map((m) => m.id),
   };
 
   const handleSubmit = async (values: z.infer<typeof schema>) => {

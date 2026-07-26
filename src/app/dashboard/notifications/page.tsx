@@ -59,7 +59,7 @@ export default function Notifications() {
               
               <div className="relative">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center text-sm font-semibold shadow-sm">
-                  {notif.user.avatar}
+                  {notif.user?.avatar}
                 </div>
                 <div className="absolute -bottom-1 -right-1 p-1 bg-card rounded-full shadow-sm">
                   {getIcon(notif.type)}

@@ -47,11 +47,11 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
 
   const activeProjects =
-    projects?.filter((p) => p.status === "active").length || 0;
-  const tasksToday = tasks?.filter((t) => t.status !== "done").length || 0; // Simplified for mock
+    projects?.filter((p) => p.status === "ACTIVE").length || 0;
+  const tasksToday = tasks?.filter((t) => t.status !== "DONE").length || 0; // Simplified for mock
   const completionRate = tasks
     ? Math.round(
-        (tasks.filter((t) => t.status === "done").length / tasks.length) * 100,
+        (tasks.filter((t) => t.status === "DONE").length / tasks.length) * 100,
       )
     : 0;
 
@@ -65,22 +65,22 @@ export default function Dashboard() {
   const pieData = [
     {
       name: "Todo",
-      value: tasks?.filter((t) => t.status === "todo").length || 0,
+      value: tasks?.filter((t) => t.status === "TODO").length || 0,
       color: "hsl(var(--muted-foreground))",
     },
     {
       name: "In Progress",
-      value: tasks?.filter((t) => t.status === "in-progress").length || 0,
+      value: tasks?.filter((t) => t.status === "IN_PROGRESS").length || 0,
       color: "hsl(var(--primary))",
     },
     {
       name: "Review",
-      value: tasks?.filter((t) => t.status === "review").length || 0,
+      value: tasks?.filter((t) => t.status === "REVIEW").length || 0,
       color: "hsl(38, 92%, 50%)",
     },
     {
       name: "Done",
-      value: tasks?.filter((t) => t.status === "done").length || 0,
+      value: tasks?.filter((t) => t.status === "DONE").length || 0,
       color: "hsl(142, 71%, 45%)",
     },
   ];
@@ -270,7 +270,7 @@ export default function Dashboard() {
                     .fill(0)
                     .map((_, i) => <ProjectCardSkeleton key={i} />)
                 : projects
-                    ?.filter((p) => p.status === "active")
+                    ?.filter((p) => p.status === "ACTIVE")
                     .slice(0, 2)
                     .map((project) => (
                       <ProjectCard key={project.id} project={project} />

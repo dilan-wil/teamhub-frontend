@@ -39,8 +39,8 @@ const ALL_TAGS = [
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  status: z.enum(["todo", "in-progress", "review", "done"]),
-  priority: z.enum(["low", "medium", "high", "urgent"]),
+  status: z.enum(["TODO", "IN_PROGRESS", "REVIEW", "DONE"]),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]),
   assigneeId: z.string().min(1, "Assignee is required"),
   projectId: z.string().min(1, "Project is required"),
   dueDate: z.string().min(1, "Due date is required"),
@@ -220,10 +220,10 @@ function TaskForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="urgent">Urgent</SelectItem>
+                  <SelectItem value="LOW">Low</SelectItem>
+                  <SelectItem value="MEDIUM">Medium</SelectItem>
+                  <SelectItem value="HIGH">High</SelectItem>
+                  <SelectItem value="URGENT">Urgent</SelectItem>
                 </SelectContent>
               </Select>
             )}
@@ -355,8 +355,8 @@ export function CreateTaskDialog({
   const defaults: FormValues = {
     title: "",
     description: "",
-    status: "todo",
-    priority: "medium",
+    status: "TODO",
+    priority: "MEDIUM",
     assigneeId: "",
     projectId: defaultProjectId || (projects[0]?.id ?? ""),
     dueDate: "",
@@ -421,8 +421,8 @@ export function EditTaskDialog({
     description: task.description,
     status: task.status,
     priority: task.priority,
-    assigneeId: task.assignee.id,
-    projectId: task.project.id,
+    assigneeId: task.assignee?.id ?? "",
+    projectId: task.project?.id ?? "",
     dueDate: task.dueDate
       ? new Date(task.dueDate).toISOString().split("T")[0]
       : "",
