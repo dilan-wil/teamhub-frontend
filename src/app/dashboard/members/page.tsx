@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PageTransition } from "@/components/page-transition";
 import { CardSkeleton } from "@/components/loading";
 import {
@@ -44,13 +44,20 @@ const AVATAR_GRADIENTS = [
 ];
 
 export default function Members() {
-  const users = mockUsers;
+  const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [showInvite, setShowInvite] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    // async function getMembers(){
+    //   const
+    // }
+    // await getMembers
+  }, [])
 
   const filtered = users.filter((u) => {
     const matchSearch =

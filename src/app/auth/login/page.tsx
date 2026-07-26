@@ -1,10 +1,27 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { PageTransition } from "@/components/page-transition";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { authApi } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function Login() {
+  const router = useRouter()
+  const {login} = useAuth()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault()
+    const data = await login(email, password)
+    // console.log(data)
+    if(data.success){
+      router.push("/dashboard")
+    }
+  }
+
   return (
     <PageTransition className="min-h-screen flex bg-background">
       {/* Left panel - Branding */}
@@ -64,10 +81,7 @@ export default function Login() {
 
           <form
             className="space-y-5"
-            onSubmit={(e) => {
-              e.preventDefault();
-              window.location.href = "/dashboard";
-            }}
+            onSubmit={handleSubmit}
           >
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground">
@@ -75,6 +89,7 @@ export default function Login() {
               </label>
               <input
                 type="email"
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@company.com"
                 className="w-full h-12 px-4 bg-card border border-border/50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm placeholder:text-muted-foreground"
                 required
@@ -86,15 +101,16 @@ export default function Login() {
                 <label className="text-sm font-medium text-foreground">
                   Password
                 </label>
-                <Link
+                {/* <Link
                   href="/forgot-password"
                   className="text-xs font-medium text-primary hover:underline"
                 >
                   Forgot password?
-                </Link>
+                </Link> */}
               </div>
               <input
                 type="password"
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="w-full h-12 px-4 bg-card border border-border/50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm placeholder:text-muted-foreground"
                 required
@@ -103,12 +119,12 @@ export default function Login() {
 
             <button
               type="submit"
-              className="w-full h-12 bg-primary text-primary-foreground rounded-xl font-medium shadow-sm hover:scale-[0.98] transition-transform flex items-center justify-center gap-2 mt-2"
+              className="w-full cursor-pointer h-12 bg-primary text-primary-foreground rounded-xl font-medium shadow-sm hover:scale-[0.98] transition-transform flex items-center justify-center gap-2 mt-2"
             >
               Sign In
             </button>
 
-            <button
+            {/* <button
               type="button"
               className="w-full h-12 bg-card border border-border/50 text-foreground rounded-xl font-medium shadow-sm hover:bg-muted/50 transition-colors flex items-center justify-center gap-2"
             >
@@ -136,10 +152,10 @@ export default function Login() {
                 />
               </svg>
               Sign in with Google
-            </button>
+            </button> */}
           </form>
 
-          <p className="text-center text-sm text-muted-foreground">
+          {/* <p className="text-center text-sm text-muted-foreground">
             Don't have an account?{" "}
             <Link
               href="/register"
@@ -147,7 +163,7 @@ export default function Login() {
             >
               Sign up
             </Link>
-          </p>
+          </p> */}
         </div>
       </div>
     </PageTransition>
