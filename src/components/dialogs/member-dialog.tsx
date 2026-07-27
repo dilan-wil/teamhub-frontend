@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +24,8 @@ import {
 import { cn } from "@/lib/utils";
 import { User, Project } from "@/lib/types";
 import { mockUsers } from "@/lib/data";
+import { authApi } from "@/lib/api";
+import { toast } from "sonner";
 
 const DEPARTMENTS = [
   "Engineering",
@@ -36,7 +39,7 @@ const DEPARTMENTS = [
 const memberSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Enter a valid email"),
-  role: z.enum(["admin", "member", "viewer"]),
+  role: z.enum(["ADMIN", "MEMBER", "MANAGER"]),
   department: z.string().min(1, "Department is required"),
 });
 type MemberFormValues = z.infer<typeof memberSchema>;
@@ -103,13 +106,13 @@ function MemberForm({
             control={control}
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="rounded-xl">
-                  <SelectValue />
+                <SelectTrigger className="w-full rounded-xl">
+                  <SelectValue placeholder="Select a role"/>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="member">Member</SelectItem>
-                  <SelectItem value="viewer">Viewer</SelectItem>
+                  <SelectItem value="ADMIN">Admin</SelectItem>
+                  <SelectItem value="MEMBER">Member</SelectItem>
+                  <SelectItem value="MANAGER">Manager</SelectItem>
                 </SelectContent>
               </Select>
             )}
@@ -170,16 +173,24 @@ export function InviteMemberDialog({
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
-//   const { mutateAsync, isPending } = useCreateUser();
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const defaults: MemberFormValues = {
     name: "",
     email: "",
-    role: "member",
+    role: "MEMBER",
     department: "",
   };
 
   const handleSubmit = async (values: MemberFormValues) => {
-    // await mutateAsync(values);
+    try{
+      setIsSubmitting(true)
+      await authApi.register(values)
+      toast.success("New User Added")
+    } catch(error){
+      console.log(error)
+    } finally {
+      setIsSubmitting(false)
+    }
     onOpenChange(false);
   };
 
@@ -203,7 +214,7 @@ export function InviteMemberDialog({
             defaultValues={defaults}
             onSubmit={handleSubmit}
             onCancel={() => onOpenChange(false)}
-            isSubmitting={true}
+            isSubmitting={isSubmitting}
             submitLabel="Send Invite"
           />
         </motion.div>
@@ -227,7 +238,7 @@ export function EditMemberDialog({
     name: user.name,
     email: user.email,
     role: user.role,
-    department: user.department,
+    department: user.department!,
   };
 
   const handleSubmit = async (values: MemberFormValues) => {
@@ -277,7 +288,7 @@ export function AddMemberToProjectDialog({
   const [saving, setSaving] = useState(false);
 
   const available = allUsers.filter(
-    (u) => !project.members.some((m) => m.id === u.id),
+    (u) => !project.members?.some((m) => m.id === u.id),
   );
 
   const handleAdd = async () => {

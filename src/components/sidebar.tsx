@@ -18,6 +18,7 @@ import { cn } from "../lib/utils";
 import { motion } from "framer-motion";
 import { useTheme } from "@/contexts/theme-provider";
 import { mockUsers } from "@/lib/data";
+import { useAuth } from "@/contexts/auth-context";
 
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
@@ -36,7 +37,7 @@ const BOTTOM_NAV_ITEMS = [
 
 export function Sidebar() {
   const location = usePathname();
-  const user = mockUsers[0];
+  const {user} = useAuth()
   const { theme, setTheme } = useTheme();
 
   return (
@@ -51,6 +52,7 @@ export function Sidebar() {
       <div className="flex-1 overflow-y-auto px-3 space-y-1 scrollbar-hide">
         {NAV_ITEMS.map((item) => {
           const isActive = location.startsWith(item.href);
+          if(item.label === "Members" && user?.role === "MEMBER") return
           return (
             <Link key={item.label} href={item.href} className="block relative">
               {isActive && (

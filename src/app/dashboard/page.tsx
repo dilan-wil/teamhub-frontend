@@ -37,9 +37,10 @@ import {
   PriorityBadge,
 } from "@/components/ui-components";
 import { mockActivities, mockProjects, mockTasks, mockUsers } from "@/lib/data";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function Dashboard() {
-  const user = mockUsers[0];
+  const {user} = useAuth()
   const projects = mockProjects;
   const tasks = mockTasks;
   const team = mockUsers;

@@ -9,7 +9,7 @@ import Link from 'next/link';
 
 export function ProjectCard({ project }: { project: Project }) {
   return (
-    <Link href={`/projects/${project.id}`}>
+    <Link href={`/dashboard/projects/${project.id}`}>
       <motion.div 
         whileHover={{ y: -4, scale: 1.01 }}
         transition={{ duration: 0.2, ease: "easeOut" }}

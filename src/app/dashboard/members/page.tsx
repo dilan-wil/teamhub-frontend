@@ -25,6 +25,7 @@ import { User } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { format, formatDistanceToNow } from "date-fns";
 import { mockUsers } from "@/lib/data";
+import { usersApi } from "@/lib/api";
 
 const ROLE_COLORS: Record<string, string> = {
   admin: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
@@ -45,7 +46,7 @@ const AVATAR_GRADIENTS = [
 
 export default function Members() {
   const [users, setUsers] = useState<User[]>([])
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [showInvite, setShowInvite] = useState(false);
@@ -53,10 +54,12 @@ export default function Members() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // async function getMembers(){
-    //   const
-    // }
-    // await getMembers
+    async function getMembers(){
+      const allUsers = await usersApi.findAll();
+      setUsers(allUsers)
+      setIsLoading(false)
+    }
+    getMembers()
   }, [])
 
   const filtered = users.filter((u) => {
@@ -103,9 +106,9 @@ export default function Members() {
           className="h-11 bg-card border border-border/50 rounded-xl px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
         >
           <option value="all">All Roles</option>
-          <option value="admin">Admin</option>
-          <option value="member">Member</option>
-          <option value="viewer">Viewer</option>
+          <option value="ADMIN">Admin</option>
+          <option value="MEMBER">Member</option>
+          <option value="MANAGER">Member</option>
         </select>
       </div>
 
@@ -142,8 +145,8 @@ export default function Members() {
                     {/* Dropdown menu */}
                     <div className="absolute top-4 right-4">
                       <DropdownMenu>
-                        <DropdownMenuTrigger>
-                          <button className="p-1.5 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity rounded-lg hover:bg-muted">
+                        <DropdownMenuTrigger> 
+                          <button className="p-1.5 text-muted-foreground cursor-pointer hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity rounded-lg hover:bg-muted">
                             <MoreVertical className="w-4 h-4" />
                           </button>
                         </DropdownMenuTrigger>
@@ -160,9 +163,9 @@ export default function Members() {
                           >
                             <Pencil className="w-3.5 h-3.5 mr-2" /> Edit Member
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="rounded-lg cursor-pointer">
+                          {/* <DropdownMenuItem className="rounded-lg cursor-pointer">
                             <Mail className="w-3.5 h-3.5 mr-2" /> Send Email
-                          </DropdownMenuItem>
+                          </DropdownMenuItem> */}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,8 +23,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { Project } from "@/lib/types";
+import { Project, User } from "@/lib/types";
 import { mockUsers } from "@/lib/data";
+import { projectMembersApi, projectsApi, usersApi } from "@/lib/api";
 
 const GRADIENTS = [
   { label: "Ocean", value: "from-blue-500 to-indigo-500" },
@@ -65,7 +67,7 @@ function ProjectForm({
   onCancel: () => void;
   isSubmitting: boolean;
 }) {
-  const users = mockUsers;
+  const [users, setUsers] = useState<User[]>([]);
   const {
     register,
     handleSubmit,
@@ -77,6 +79,14 @@ function ProjectForm({
     resolver: zodResolver(schema),
     defaultValues,
   });
+
+  useEffect(() => {
+    async function getUsers() {
+      const allUsers = await usersApi.findAll();
+      setUsers(allUsers);
+    }
+    getUsers();
+  }, []);
 
   const selectedGradient = watch("gradient");
   const selectedMemberIds = watch("memberIds");
@@ -245,11 +255,13 @@ function ProjectForm({
 export function CreateProjectDialog({
   open,
   onOpenChange,
+  change
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  change: any;
 }) {
-  const users = mockUsers;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const defaults: z.infer<typeof schema> = {
     name: "",
@@ -262,25 +274,39 @@ export function CreateProjectDialog({
   };
 
   const handleSubmit = async (values: z.infer<typeof schema>) => {
-    const members = (users ?? []).filter((u) =>
-      values.memberIds.includes(u.id),
-    );
-    // await mutateAsync({
-    //   name: values.name,
-    //   description: values.description,
-    //   status: values.status,
-    //   priority: values.priority,
-    //   dueDate: new Date(values.dueDate).toISOString(),
-    //   startDate: new Date().toISOString(),
-    //   gradient: values.gradient,
-    //   members,
-    // });
-    onOpenChange(false);
+    setIsSubmitting(true);
+    try {
+      const project = await projectsApi.create({
+        name: values.name,
+        description: values.description,
+        status: values.status,
+        priority: values.priority,
+        startDate: new Date().toISOString(),
+        dueDate: values.dueDate,
+        gradient: values.gradient,
+      });
+
+      await Promise.all(
+        values.memberIds.map((memberId) =>
+          projectMembersApi.create(project.id, {
+            userId: memberId,
+            role: "MEMBER",
+          }),
+        ),
+      );
+      change(true)
+      change(false)
+      onOpenChange(false);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg rounded-3xl">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg rounded-3xl">
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -293,7 +319,7 @@ export function CreateProjectDialog({
             defaultValues={defaults}
             onSubmit={handleSubmit}
             onCancel={() => onOpenChange(false)}
-            isSubmitting={true}
+            isSubmitting={isSubmitting}
           />
         </motion.div>
       </DialogContent>

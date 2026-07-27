@@ -4,9 +4,10 @@ import { PageTransition } from '@/components/page-transition';
 import { Mail, Calendar, Briefcase, MapPin } from 'lucide-react';
 import { StatsCard } from '@/components/stats-card';
 import { mockUsers } from '@/lib/data';
+import { useAuth } from '@/contexts/auth-context';
 
 export default function Profile() {
-  const user = mockUsers[0]
+  const {user} = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   if (isLoading) {
     return <div className="animate-pulse h-96 bg-muted rounded-3xl" />;
@@ -59,10 +60,10 @@ export default function Profile() {
                 <Briefcase className="w-4 h-4 text-foreground/70" />
                 <span className="text-foreground">{user.department}</span>
               </div>
-              <div className="flex items-center gap-3 text-muted-foreground">
+              {/* <div className="flex items-center gap-3 text-muted-foreground">
                 <MapPin className="w-4 h-4 text-foreground/70" />
                 <span className="text-foreground">San Francisco, CA</span>
-              </div>
+              </div> */}
               <div className="flex items-center gap-3 text-muted-foreground">
                 <Calendar className="w-4 h-4 text-foreground/70" />
                 <span className="text-foreground">Joined {new Date(user.createdAt).getFullYear()}</span>

@@ -72,7 +72,7 @@ export const usersApi = {
 };
 
 export const projectsApi = {
-  create: async (data: Project) => {
+  create: async (data: Partial<Project>) => {
     const res = await api.post<Project>("/projects", data);
     return res.data;
   },
@@ -104,7 +104,7 @@ export const projectsApi = {
 };
 
 export const projectMembersApi = {
-  create: async (projectId: string, data: ProjectMember) => {
+  create: async (projectId: string, data: any) => {
     const res = await api.post(`/projects/${projectId}/members`, data);
     return res.data;
   },

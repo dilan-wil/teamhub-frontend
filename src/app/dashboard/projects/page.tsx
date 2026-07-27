@@ -1,18 +1,43 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PageTransition } from '@/components/page-transition';
 import { ProjectCardSkeleton } from '@/components/loading';
 import { ProjectCard } from '@/components/project-card';
 import { Search, Filter, Plus } from 'lucide-react';
 import { CreateProjectDialog } from '@/components/dialogs/project-dialog';
 import { mockProjects } from '@/lib/data';
+import { useAuth } from '@/contexts/auth-context';
+import { projectsApi } from '@/lib/api';
+import { Project } from '@/lib/types';
 
 export default function Projects() {
-  const projects = mockProjects;
+  const {user} = useAuth()
+  const [change, setChange] = useState(true)
+  const [projects, setProjects] = useState<Project[]>([]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showCreate, setShowCreate] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    setIsLoading(true)
+    async function getAllProjects(){
+      const data = await projectsApi.findAll()
+      setProjects(data)
+    }
+
+    async function getMyProjects(){
+      const data = await projectsApi.findMyProjects()
+      setProjects(data)
+    }
+
+    if(user?.role === "MEMBER"){
+      getMyProjects()
+    } else {
+      getAllProjects()
+    }
+    setIsLoading(false)
+  }, [change])
 
   const filtered = projects?.filter(p => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -84,7 +109,7 @@ export default function Projects() {
         }
       </div>
 
-      <CreateProjectDialog open={showCreate} onOpenChange={setShowCreate} />
+      <CreateProjectDialog open={showCreate} onOpenChange={setShowCreate} change={setChange}/>
     </PageTransition>
   );
 }
