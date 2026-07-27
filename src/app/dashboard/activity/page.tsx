@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { PageTransition } from "@/components/page-transition";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/loading";
-import { mockActivities } from "@/lib/data";
 import { Activity as ActivityType} from "@/lib/types";
 import { activitiesApi } from "@/lib/api";
 

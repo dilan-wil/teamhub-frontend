@@ -24,7 +24,6 @@ import {
 import { User } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { format, formatDistanceToNow } from "date-fns";
-import { mockUsers } from "@/lib/data";
 import { usersApi } from "@/lib/api";
 
 const ROLE_COLORS: Record<string, string> = {

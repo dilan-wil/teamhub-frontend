@@ -33,7 +33,7 @@ export function ProjectCard({ project }: { project: Project }) {
             <div className="flex justify-between items-center text-xs font-medium">
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>10/20 tasks</span>
+                <span>{project.tasks?.filter(task => task.status !== "DONE").length} tasks</span>
               </div>
               <span className="text-foreground">{project.progress}%</span>
             </div>

@@ -5,7 +5,6 @@ import { Skeleton } from '@/components/loading';
 import { Check, MessageSquare, AlertCircle, Calendar, FolderKanban, AtSign } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { mockNotifications } from '@/lib/data';
 import { Notification } from '@/lib/types';
 import { notificationsApi } from '@/lib/api';
 import { toast } from '@/components/ui/toast';

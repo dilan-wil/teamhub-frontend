@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { PageTransition } from '@/components/page-transition';
 import { Mail, Calendar, Briefcase, MapPin } from 'lucide-react';
 import { StatsCard } from '@/components/stats-card';
-import { mockUsers } from '@/lib/data';
 import { useAuth } from '@/contexts/auth-context';
 
 export default function Profile() {

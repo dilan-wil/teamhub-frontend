@@ -36,7 +36,6 @@ import {
   StatusBadge,
   PriorityBadge,
 } from "@/components/ui-components";
-import { mockActivities, mockProjects, mockTasks, mockUsers } from "@/lib/data";
 import { useAuth } from "@/contexts/auth-context";
 import { dashboardApi, projectsApi, usersApi } from "@/lib/api";
 import { Project, Task, User } from "@/lib/types";

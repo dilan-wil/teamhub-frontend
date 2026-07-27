@@ -5,7 +5,6 @@ import { ProjectCardSkeleton } from '@/components/loading';
 import { ProjectCard } from '@/components/project-card';
 import { Search, Filter, Plus } from 'lucide-react';
 import { CreateProjectDialog } from '@/components/dialogs/project-dialog';
-import { mockProjects } from '@/lib/data';
 import { useAuth } from '@/contexts/auth-context';
 import { projectsApi } from '@/lib/api';
 import { Project } from '@/lib/types';

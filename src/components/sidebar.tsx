@@ -17,7 +17,6 @@ import {
 import { cn } from "../lib/utils";
 import { motion } from "framer-motion";
 import { useTheme } from "@/contexts/theme-provider";
-import { mockUsers } from "@/lib/data";
 import { useAuth } from "@/contexts/auth-context";
 
 const NAV_ITEMS = [
