@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   PageTransition,
   staggerContainer,
@@ -38,18 +38,41 @@ import {
 } from "@/components/ui-components";
 import { mockActivities, mockProjects, mockTasks, mockUsers } from "@/lib/data";
 import { useAuth } from "@/contexts/auth-context";
+import { dashboardApi, projectsApi, usersApi } from "@/lib/api";
+import { Project, Task, User } from "@/lib/types";
 
 export default function Dashboard() {
   const {user} = useAuth()
-  const projects = mockProjects;
-  const tasks = mockTasks;
-  const team = mockUsers;
-  const activities = mockActivities;
-  const [isLoading, setIsLoading] = useState(false);
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState<any>({})
+  const [users, setUsers] = useState<User[]>([])
+  const [projects, setProjects] = useState<Project[]>([])
 
-  const activeProjects =
-    projects?.filter((p) => p.status === "ACTIVE").length || 0;
-  const tasksToday = tasks?.filter((t) => t.status !== "DONE").length || 0; // Simplified for mock
+  useEffect(() => {
+      setIsLoading(true)
+      async function getStats(){
+        const allStats = await dashboardApi.getStats()
+        setStats(allStats)
+        console.log(allStats.statistics.totalProjects)
+        setIsLoading(false)
+      }
+      async function getAllUsers(){
+        const allUsers = await usersApi.findAll()
+        setUsers(allUsers)
+      }
+
+      async function getMyProjects(){
+        const myProjects = await projectsApi.findAll()
+        setProjects(myProjects)
+      }
+      
+      getStats()
+      getAllUsers()
+      getMyProjects()
+    }, [])
+  const activeProjects = 0;
+  const tasksToday = tasks?.filter((t) => t.status !== "DONE").length || 0; 
   const completionRate = tasks
     ? Math.round(
         (tasks.filter((t) => t.status === "DONE").length / tasks.length) * 100,
@@ -124,7 +147,7 @@ export default function Dashboard() {
             <motion.div>
               <StatsCard
                 title="Active Projects"
-                value={activeProjects}
+                value={stats.statistics.myProjects}
                 icon={FolderKanban}
                 trend={12}
                 trendLabel="vs last month"
@@ -133,7 +156,7 @@ export default function Dashboard() {
             <motion.div>
               <StatsCard
                 title="Tasks Pending"
-                value={tasksToday}
+                value={Number(stats.statistics.totalTasks) - Number(stats.statistics.completedTasks)}
                 icon={CheckSquare}
                 trend={-5}
                 trendLabel="vs last week"
@@ -142,7 +165,7 @@ export default function Dashboard() {
             <motion.div>
               <StatsCard
                 title="Team Members"
-                value={team?.length || 0}
+                value={users.length}
                 icon={Users}
                 trend={2}
                 trendLabel="new this month"
@@ -151,7 +174,7 @@ export default function Dashboard() {
             <motion.div>
               <StatsCard
                 title="Completion Rate"
-                value={completionRate}
+                value={stats.statistics.totalTasks ? (stats.statistics.completedTasks/stats.statistics.totalTasks*100) : 0}
                 suffix="%"
                 icon={TrendingUp}
                 trend={8}
@@ -259,7 +282,7 @@ export default function Dashboard() {
                 Active Projects
               </h2>
               <a
-                href="/projects"
+                href="/dashboard/projects"
                 className="text-sm text-primary font-medium hover:underline"
               >
                 View all
@@ -271,7 +294,7 @@ export default function Dashboard() {
                     .fill(0)
                     .map((_, i) => <ProjectCardSkeleton key={i} />)
                 : projects
-                    ?.filter((p) => p.status === "ACTIVE")
+                    // ?.filter((p) => p.status === "ACTIVE")
                     .slice(0, 2)
                     .map((project) => (
                       <ProjectCard key={project.id} project={project} />
@@ -356,7 +379,7 @@ export default function Dashboard() {
                         </div>
                       </div>
                     ))
-                : activities?.slice(0, 5).map((activity) => (
+                : stats.recentActivities?.slice(0, 5).map((activity: any) => (
                     <div key={activity.id} className="flex gap-3 group">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white text-xs font-medium shrink-0 shadow-sm">
                         {activity.user.avatar}

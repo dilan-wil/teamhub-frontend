@@ -61,7 +61,7 @@ export function StatsCard({ title, value, icon: Icon, trend, trendLabel, prefix 
           {suffix && <span className="text-xl text-muted-foreground">{suffix}</span>}
         </div>
         
-        {trend !== undefined && (
+        {/* {trend !== undefined && (
           <div className="flex items-center gap-1.5 mt-2">
             <span className={cn(
               "flex items-center text-xs font-medium px-1.5 py-0.5 rounded-md",
@@ -76,7 +76,7 @@ export function StatsCard({ title, value, icon: Icon, trend, trendLabel, prefix 
             </span>
             {trendLabel && <span className="text-xs text-muted-foreground">{trendLabel}</span>}
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

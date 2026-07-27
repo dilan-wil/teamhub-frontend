@@ -50,7 +50,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initializeAuth = async () => {
       const token = localStorage.getItem("accessToken");
-      console.log(token)
       if (!token) {
         setIsLoading(false);
         return;

@@ -44,7 +44,6 @@ export const authApi = {
 
   profile: async () => {
     const res = await api.get<User>("/auth/profile");
-    console.log(res)
     return res.data;
   },
 };
@@ -92,7 +91,7 @@ export const projectsApi = {
     return res.data;
   },
 
-  update: async (id: string, data: Project) => {
+  update: async (id: string, data: Partial<Project>) => {
     const res = await api.patch(`/projects/${id}`, data);
     return res.data;
   },
