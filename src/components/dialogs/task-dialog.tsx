@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useRef, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,8 +23,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { Task } from "@/lib/types";
-import { mockProjects, mockUsers } from "@/lib/data";
+import { Project, Task, User } from "@/lib/types";
+import { projectsApi, tasksApi, usersApi } from "@/lib/api";
 
 const ALL_TAGS = [
   "frontend",
@@ -66,10 +66,18 @@ function UserSelect({
   onChange: (v: string) => void;
   placeholder?: string;
 }) {
-  const users = mockUsers;
+  const [users, setUsers] = useState<User[]>([]);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const selected = users.find((u) => u.id === value);
+
+  useEffect(() => {
+    async function getUsers() {
+      const allUsers = await usersApi.findAll();
+      setUsers(allUsers);
+    }
+    getUsers();
+  }, []);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -152,7 +160,7 @@ function TaskForm({
   isSubmitting: boolean;
   lockedProjectId?: string;
 }) {
-  const projects = mockProjects;
+  const [projects, setProjects] = useState<Project[]>([]);
   const {
     register,
     handleSubmit,
@@ -165,6 +173,14 @@ function TaskForm({
     defaultValues,
   });
   const selectedTags = watch("tags");
+
+  useEffect(() => {
+    async function getProjects() {
+      const allProjects = await projectsApi.findAll();
+      setProjects(allProjects);
+    }
+    getProjects();
+  }, []);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -351,36 +367,29 @@ export function CreateTaskDialog({
   onOpenChange: (v: boolean) => void;
   defaultProjectId?: string;
 }) {
-    const projects = mockProjects
-
+  const [isPending, setIsPending] = useState(false)
   const defaults: FormValues = {
     title: "",
     description: "",
     status: "TODO",
     priority: "MEDIUM",
     assigneeId: "",
-    projectId: defaultProjectId || (projects[0]?.id ?? ""),
+    projectId: defaultProjectId || "",
     dueDate: "",
     estimatedHours: 1,
     tags: [],
   };
 
   const handleSubmit = async (values: FormValues) => {
-    const assignee = mockUsers.find((u: any) => u.id === values.assigneeId);
-    const project = mockProjects.find((p: any) => p.id === values.projectId);
-    if (!assignee || !project) return;
-    // await mutateAsync({
-    //   title: values.title,
-    //   description: values.description ?? "",
-    //   status: values.status,
-    //   priority: values.priority,
-    //   assignee,
-    //   project,
-    //   dueDate: new Date(values.dueDate).toISOString(),
-    //   estimatedHours: values.estimatedHours,
-    //   tags: values.tags,
-    // });
+    try{
+      setIsPending(true)
+      await tasksApi.create(values)
     onOpenChange(false);
+    } catch(error){
+      console.log(error)
+    } finally{
+      setIsPending(false)
+    }
   };
 
   return (
@@ -398,7 +407,7 @@ export function CreateTaskDialog({
             defaultValues={defaults}
             onSubmit={handleSubmit}
             onCancel={() => onOpenChange(false)}
-            isSubmitting={true}
+            isSubmitting={isPending}
             lockedProjectId={defaultProjectId}
           />
         </motion.div>
@@ -416,7 +425,6 @@ export function EditTaskDialog({
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
-
   const defaults: FormValues = {
     title: task.title,
     description: task.description,
@@ -432,10 +440,6 @@ export function EditTaskDialog({
   };
 
   const handleSubmit = async (values: FormValues) => {
-    const assignee =
-      mockUsers.find((u: any) => u.id === values.assigneeId) ?? task.assignee;
-    const project =
-      mockProjects.find((p: any) => p.id === values.projectId) ?? task.project;
     // await mutateAsync({
     //   id: task.id,
     //   data: {

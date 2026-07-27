@@ -24,7 +24,6 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { Project, User } from "@/lib/types";
-import { mockUsers } from "@/lib/data";
 import { projectMembersApi, projectsApi, usersApi } from "@/lib/api";
 
 const GRADIENTS = [
@@ -336,7 +335,6 @@ export function EditProjectDialog({
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
-  const users = mockUsers;
   const defaults: z.infer<typeof schema> = {
     name: project.name,
     description: project.description,
@@ -350,9 +348,7 @@ export function EditProjectDialog({
   };
 
   const handleSubmit = async (values: z.infer<typeof schema>) => {
-    const members = (users ?? []).filter((u) =>
-      values.memberIds.includes(u.id),
-    );
+   
     // await mutateAsync({
     //   id: project.id,
     //   data: {

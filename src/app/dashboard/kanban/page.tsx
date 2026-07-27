@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils";
 import { AvatarGroup, PriorityBadge } from "@/components/ui-components";
 import { format } from "date-fns";
 import { Calendar, MoreHorizontal, Plus } from "lucide-react";
-import { mockTasks } from "@/lib/data";
+import { tasksApi } from "@/lib/api";
 
 const COLUMNS: { id: Task["status"]; title: string }[] = [
   { id: "TODO", title: "To Do" },
@@ -159,16 +159,17 @@ function DroppableColumn({
 }
 
 export default function Kanban() {
-  const initialTasks = mockTasks
   const [isLoading, setIsLoading] = useState(false)
   const [tasks, setTasks] = useState<Task[]>([]);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
   useEffect(() => {
-    if (initialTasks) {
-      setTasks(initialTasks);
+    async function getTasks(){
+      const allTasks = await tasksApi.findAll()
+      setTasks(allTasks)
     }
-  }, [initialTasks]);
+    getTasks()
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),

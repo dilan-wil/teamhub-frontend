@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -23,8 +23,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { User, Project } from "@/lib/types";
-import { mockUsers } from "@/lib/data";
-import { authApi } from "@/lib/api";
+import { authApi, usersApi } from "@/lib/api";
 import { toast } from "../ui/toast";
 
 const DEPARTMENTS = [
@@ -290,9 +289,17 @@ export function AddMemberToProjectDialog({
   onOpenChange: (v: boolean) => void;
   onAdd: (userId: string) => void;
 }) {
-  const allUsers = mockUsers;
+  const [allUsers, setAllUsers] = useState<User[]>([])
   const [selected, setSelected] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+      async function getUsers() {
+        const users = await usersApi.findAll();
+        setAllUsers(users);
+      }
+      getUsers();
+    }, []);
 
   const available = allUsers.filter(
     (u) => !project.members?.some((m) => m.id === u.id),

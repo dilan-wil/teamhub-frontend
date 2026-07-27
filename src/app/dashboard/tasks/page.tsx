@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PageTransition } from "@/components/page-transition";
 import { TableSkeleton } from "@/components/loading";
 import {
@@ -37,7 +37,7 @@ import {
   CreateTaskDialog,
   EditTaskDialog,
 } from "@/components/dialogs/task-dialog";
-import { mockTasks } from "@/lib/data";
+import { tasksApi } from "@/lib/api";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -91,7 +91,7 @@ function DeleteConfirm({
 }
 
 export default function Tasks() {
-  const tasks = mockTasks;
+  const [tasks, setTasks] = useState<Task[]>([])
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -101,6 +101,14 @@ export default function Tasks() {
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [selected, setSelected] = useState<Task | null>(null);
+
+  useEffect(() => {
+    async function getMyTasks(){
+      const myTasks = await tasksApi.findAll()
+      setTasks(myTasks)
+    }
+    getMyTasks()
+  }, [])
 
   const filtered = tasks.filter((t) => {
     const matchSearch =

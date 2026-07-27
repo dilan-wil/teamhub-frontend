@@ -61,7 +61,6 @@ import {
 import { EditProjectDialog } from "@/components/dialogs/project-dialog";
 import { AddMemberToProjectDialog } from "@/components/dialogs/member-dialog";
 import { Project, Task } from "@/lib/types";
-import { mockUsers } from "@/lib/data";
 import Link from "next/link";
 import { projectMembersApi, projectsApi, tasksApi } from "@/lib/api";
 
@@ -207,8 +206,6 @@ export default function ProjectDetail() {
   );
 
   const handleAddMember = async (userId: string) => {
-    const user = mockUsers.find((u) => u.id === userId);
-    if (!user) return;
     await projectMembersApi.create(project.id, {
       userId: userId,
       role: "MEMBER"
@@ -236,7 +233,7 @@ export default function ProjectDetail() {
   return (
     <PageTransition className="space-y-6 pb-12">
       <Link
-        href="/projects"
+        href="/dashboard/projects"
         className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
