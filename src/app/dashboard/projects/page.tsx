@@ -79,10 +79,10 @@ export default function Projects() {
           className="h-11 bg-card border border-border/50 rounded-xl px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
         >
           <option value="all">All Statuses</option>
-          <option value="active">Active</option>
-          <option value="planning">Planning</option>
-          <option value="on-hold">On Hold</option>
-          <option value="completed">Completed</option>
+          <option value="ACTIVE">Active</option>
+          <option value="PLANNING">Planning</option>
+          <option value="ON_HOLD">On Hold</option>
+          <option value="COMPLETED">Completed</option>
         </select>
 
         <button className="h-11 px-4 bg-card border border-border/50 rounded-xl flex items-center gap-2 text-sm font-medium hover:bg-muted transition-colors">

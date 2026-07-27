@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils";
 import { User, Project } from "@/lib/types";
 import { mockUsers } from "@/lib/data";
 import { authApi } from "@/lib/api";
-import { toast } from "sonner";
+import { toast } from "../ui/toast";
 
 const DEPARTMENTS = [
   "Engineering",
@@ -107,7 +107,7 @@ function MemberForm({
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger className="w-full rounded-xl">
-                  <SelectValue placeholder="Select a role"/>
+                  <SelectValue placeholder="Select a role" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ADMIN">Admin</SelectItem>
@@ -169,11 +169,13 @@ function MemberForm({
 export function InviteMemberDialog({
   open,
   onOpenChange,
+  change,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  change: any;
 }) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const defaults: MemberFormValues = {
     name: "",
     email: "",
@@ -182,16 +184,22 @@ export function InviteMemberDialog({
   };
 
   const handleSubmit = async (values: MemberFormValues) => {
-    try{
-      setIsSubmitting(true)
-      await authApi.register(values)
-      toast.success("New User Added")
-    } catch(error){
-      console.log(error)
+    try {
+      setIsSubmitting(true);
+      await authApi.register(values);
+      toast.add({
+        type: "success",
+        title: "New User Added",
+        description: "User Added Successfully",
+      });
+      change(true);
+      change(false);
+      onOpenChange(false);
+    } catch (error) {
+      console.log(error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-    onOpenChange(false);
   };
 
   return (
@@ -223,7 +231,6 @@ export function InviteMemberDialog({
   );
 }
 
-
 export function EditMemberDialog({
   user,
   open,
@@ -233,7 +240,7 @@ export function EditMemberDialog({
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
-//   const { mutateAsync, isPending } = useUpdateUser();
+  //   const { mutateAsync, isPending } = useUpdateUser();
   const defaults: MemberFormValues = {
     name: user.name,
     email: user.email,
@@ -283,8 +290,8 @@ export function AddMemberToProjectDialog({
   onOpenChange: (v: boolean) => void;
   onAdd: (userId: string) => void;
 }) {
-    const allUsers = mockUsers
-    const [selected, setSelected] = useState<string[]>([]);
+  const allUsers = mockUsers;
+  const [selected, setSelected] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
 
   const available = allUsers.filter(

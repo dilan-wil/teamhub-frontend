@@ -1,25 +1,56 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PageTransition } from '@/components/page-transition';
 import { Skeleton } from '@/components/loading';
 import { Check, MessageSquare, AlertCircle, Calendar, FolderKanban, AtSign } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { mockNotifications } from '@/lib/data';
+import { Notification } from '@/lib/types';
+import { notificationsApi } from '@/lib/api';
+import { toast } from '@/components/ui/toast';
 
 export default function Notifications() {
-  const notifications = mockNotifications;
-  const [isLoading, setIsLoading] = useState(false)
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isLoading, setIsLoading] = useState(true)
+  const [change, setChange] = useState(true)
+
+  useEffect(() => {
+    async function getNotifications(){
+      const notifs = await notificationsApi.findAll()
+      setNotifications(notifs)
+      setIsLoading(false)
+    }
+    getNotifications()
+  }, [change])
   const getIcon = (type: string) => {
     switch(type) {
-      case 'mention': return <AtSign className="w-5 h-5 text-purple-500" />;
-      case 'task': return <Check className="w-5 h-5 text-emerald-500" />;
-      case 'project': return <FolderKanban className="w-5 h-5 text-blue-500" />;
+      case 'MENTION': return <AtSign className="w-5 h-5 text-purple-500" />;
+      case 'TASK': return <Check className="w-5 h-5 text-emerald-500" />;
+      case 'PROJECT': return <FolderKanban className="w-5 h-5 text-blue-500" />;
       case 'comment': return <MessageSquare className="w-5 h-5 text-amber-500" />;
-      case 'deadline': return <AlertCircle className="w-5 h-5 text-red-500" />;
+      case 'DEADLINE': return <AlertCircle className="w-5 h-5 text-red-500" />;
       default: return <AlertCircle className="w-5 h-5 text-gray-500" />;
     }
   };
+
+  async function markAsRead(id: string){
+    await notificationsApi.markAsRead(id)
+    toast.add({
+        type: "success",
+        title: "Notification Read",
+      });
+    setChange(!change)
+  }
+
+  async function markAllAsRead(){
+    await notificationsApi.markAllAsRead()
+    toast.add({
+        type: "success",
+        title: "Notifications Read",
+      });
+    setChange(!change)
+  }
 
   return (
     <PageTransition className="space-y-6 max-w-3xl mx-auto pb-10">
@@ -28,7 +59,7 @@ export default function Notifications() {
           <h1 className="text-3xl font-bold tracking-tight">Notifications</h1>
           <p className="text-muted-foreground mt-1">Stay updated on your team's activity.</p>
         </div>
-        <button className="text-sm font-medium text-primary hover:underline">
+        <button onClick={() => markAllAsRead()} className="text-sm cursor-pointer font-medium text-primary hover:underline">
           Mark all as read
         </button>
       </header>
@@ -77,7 +108,7 @@ export default function Notifications() {
                 
                 {!notif.read && (
                   <div className="mt-3">
-                    <button className="bg-primary text-primary-foreground px-4 py-1.5 rounded-lg text-xs font-medium hover:scale-95 transition-transform">
+                    <button onClick={() => markAsRead(notif.id)} className="bg-primary text-primary-foreground px-4 py-1.5 rounded-lg text-xs font-medium hover:scale-95 transition-transform">
                       View
                     </button>
                   </div>

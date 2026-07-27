@@ -7,15 +7,15 @@ import { Moon, Sun, Monitor, Bell, Lock, Users, CreditCard, Palette } from 'luci
 
 export default function Settings() {
   const { theme, setTheme } = useTheme();
-  const [activeTab, setActiveTab] = useState('general');
+  const [activeTab, setActiveTab] = useState('appearance');
 
   const tabs = [
-    { id: 'general', label: 'General', icon: Monitor },
+    // { id: 'general', label: 'General', icon: Monitor },
     { id: 'appearance', label: 'Appearance', icon: Palette },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'security', label: 'Security', icon: Lock },
-    { id: 'team', label: 'Team', icon: Users },
-    { id: 'billing', label: 'Billing', icon: CreditCard },
+    // { id: 'notifications', label: 'Notifications', icon: Bell },
+    // { id: 'security', label: 'Security', icon: Lock },
+    // { id: 'team', label: 'Team', icon: Users },
+    // { id: 'billing', label: 'Billing', icon: CreditCard },
   ];
 
   return (

@@ -47,6 +47,7 @@ const AVATAR_GRADIENTS = [
 export default function Members() {
   const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true);
+  const [change, setChange] = useState(true);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [showInvite, setShowInvite] = useState(false);
@@ -60,7 +61,7 @@ export default function Members() {
       setIsLoading(false)
     }
     getMembers()
-  }, [])
+  }, [change])
 
   const filtered = users.filter((u) => {
     const matchSearch =
@@ -276,7 +277,7 @@ export default function Members() {
         </div>
       )}
 
-      <InviteMemberDialog open={showInvite} onOpenChange={setShowInvite} />
+      <InviteMemberDialog change={setChange} open={showInvite} onOpenChange={setShowInvite} />
       {selectedUser && (
         <EditMemberDialog
           user={selectedUser}

@@ -1,9 +1,11 @@
+"use client"
+import { useAuth } from "@/contexts/auth-context";
 import { mockNotifications, mockUsers } from "@/lib/data";
 import { Search, Bell, Command } from "lucide-react";
 import Link from "next/link";
 
 export function Navbar() {
-  const user = mockUsers[0];
+  const {user} = useAuth()
   const notifications = mockNotifications;
   const unreadCount = notifications?.filter((n) => !n.read).length || 0;
 

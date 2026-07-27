@@ -1,4 +1,5 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
+import { Toaster } from "@/components/ui/toast";
 import { ProtectedRoute } from "@/contexts/protected-route";
 
 export default function Layout({
@@ -8,7 +9,7 @@ export default function Layout({
 }>) {
   return (
     <ProtectedRoute>
-      <DashboardLayout>{children}</DashboardLayout>;
+      <DashboardLayout>{children} <Toaster /></DashboardLayout>;
     </ProtectedRoute>
   );
 }
