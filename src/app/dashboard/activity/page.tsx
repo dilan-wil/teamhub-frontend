@@ -1,13 +1,24 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PageTransition } from "@/components/page-transition";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/loading";
 import { mockActivities } from "@/lib/data";
+import { Activity as ActivityType} from "@/lib/types";
+import { activitiesApi } from "@/lib/api";
 
 export default function Activity() {
-  const [isLoading, setIsLoading] = useState(false);
-  const activities = mockActivities;
+  const [isLoading, setIsLoading] = useState(true);
+  const [activities, setActivities] = useState<ActivityType[]>([]);
+
+  useEffect(() => {
+    async function getNotifications(){
+      const activs = await activitiesApi.findAll()
+      setActivities(activs)
+      setIsLoading(false)
+    }
+    getNotifications()
+  }, [])
   return (
     <PageTransition className="space-y-8 max-w-3xl mx-auto pb-10">
       <header>
@@ -36,11 +47,11 @@ export default function Activity() {
                 <div className="bg-card border border-border/50 rounded-2xl p-5 shadow-sm">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white text-xs font-semibold shadow-sm">
-                      {activity.user.avatar}
+                      {activity.user?.avatar}
                     </div>
                     <div>
                       <span className="font-semibold text-sm mr-1">
-                        {activity.user.name}
+                        {activity.user?.name}
                       </span>
                       <span className="text-sm text-muted-foreground">
                         {activity.description}
