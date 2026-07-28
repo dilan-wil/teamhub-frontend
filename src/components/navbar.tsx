@@ -41,7 +41,7 @@ export function Navbar() {
         >
           <Bell className="w-5 h-5" />
           {notifications.length > 0 && (
-            <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-destructive rounded-full border-2 border-background" />
+            <span className="absolute top-1.5 right-1.5 w-3 h-3 bg-destructive rounded-full border-2 border-background" />
           )}
         </Link>
 

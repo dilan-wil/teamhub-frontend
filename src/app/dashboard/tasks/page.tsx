@@ -185,10 +185,10 @@ export default function Tasks() {
             className="h-10 bg-background border border-border/50 rounded-xl px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
           >
             <option value="all">All Statuses</option>
-            <option value="todo">To Do</option>
-            <option value="in-progress">In Progress</option>
-            <option value="review">Review</option>
-            <option value="done">Done</option>
+            <option value="TODO">To Do</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="REVIEW">Review</option>
+            <option value="DONE">Done</option>
           </select>
 
           <select
@@ -197,10 +197,10 @@ export default function Tasks() {
             className="h-10 bg-background border border-border/50 rounded-xl px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
           >
             <option value="all">All Priorities</option>
-            <option value="urgent">Urgent</option>
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
+            <option value="URGENT">Urgent</option>
+            <option value="HIGH">High</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="LOW">Low</option>
           </select>
         </div>
 

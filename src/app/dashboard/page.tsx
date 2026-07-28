@@ -48,22 +48,10 @@ export default function Dashboard() {
       async function getStats(){
         const allStats = await dashboardApi.getStats()
         setStats(allStats)
-        console.log(allStats.statistics.totalProjects)
+        console.log(allStats.stats.totalProjects)
         setIsLoading(false)
       }
-      async function getAllUsers(){
-        const allUsers = await usersApi.findAll()
-        setUsers(allUsers)
-      }
-
-      async function getMyProjects(){
-        const myProjects = await projectsApi.findAll()
-        setProjects(myProjects)
-      }
-      
       getStats()
-      getAllUsers()
-      getMyProjects()
     }, [])
   const activeProjects = 0;
   const tasksToday = tasks?.filter((t) => t.status !== "DONE").length || 0; 
@@ -83,22 +71,22 @@ export default function Dashboard() {
   const pieData = [
     {
       name: "Todo",
-      value: tasks?.filter((t) => t.status === "TODO").length || 0,
+      value: stats.stats?.todoTasks ?? 0,
       color: "hsl(var(--muted-foreground))",
     },
     {
       name: "In Progress",
-      value: tasks?.filter((t) => t.status === "IN_PROGRESS").length || 0,
+      value: stats.stats?.inProgressTasks ?? 0,
       color: "hsl(var(--primary))",
     },
     {
       name: "Review",
-      value: tasks?.filter((t) => t.status === "REVIEW").length || 0,
+      value: stats.stats?.reviewTasks ?? 0,
       color: "hsl(38, 92%, 50%)",
     },
     {
       name: "Done",
-      value: tasks?.filter((t) => t.status === "DONE").length || 0,
+      value: stats.stats?.completedTasks ?? 0,
       color: "hsl(142, 71%, 45%)",
     },
   ];
@@ -141,7 +129,7 @@ export default function Dashboard() {
             <motion.div>
               <StatsCard
                 title="Active Projects"
-                value={stats.statistics.myProjects}
+                value={stats.stats.totalProjects}
                 icon={FolderKanban}
                 trend={12}
                 trendLabel="vs last month"
@@ -150,7 +138,7 @@ export default function Dashboard() {
             <motion.div>
               <StatsCard
                 title="Tasks Pending"
-                value={Number(stats.statistics.totalTasks) - Number(stats.statistics.completedTasks)}
+                value={stats.stats.pendingTasks}
                 icon={CheckSquare}
                 trend={-5}
                 trendLabel="vs last week"
@@ -159,16 +147,16 @@ export default function Dashboard() {
             <motion.div>
               <StatsCard
                 title="Team Members"
-                value={users.length}
+                value={stats.stats.teamSize}
                 icon={Users}
-                trend={2}
+                trend={stats.stats.pendingTasks}
                 trendLabel="new this month"
               />
             </motion.div>
             <motion.div>
               <StatsCard
                 title="Completion Rate"
-                value={stats.statistics.totalTasks ? (stats.statistics.completedTasks/stats.statistics.totalTasks*100) : 0}
+                value={stats.stats.completionRate ?? 0}
                 suffix="%"
                 icon={TrendingUp}
                 trend={8}
@@ -287,10 +275,8 @@ export default function Dashboard() {
                 ? Array(2)
                     .fill(0)
                     .map((_, i) => <ProjectCardSkeleton key={i} />)
-                : projects
-                    // ?.filter((p) => p.status === "ACTIVE")
-                    .slice(0, 2)
-                    .map((project) => (
+                : stats.projects
+                    .map((project: Project) => (
                       <ProjectCard key={project.id} project={project} />
                     ))}
             </div>
@@ -311,13 +297,13 @@ export default function Dashboard() {
             </h2>
             <div className="flex justify-center mb-6">
               <ProgressRing
-                progress={completionRate}
+                progress={stats?.stats?.completionRate ?? 0}
                 size={160}
                 strokeWidth={12}
               >
                 <div className="text-center">
                   <div className="text-3xl font-bold tracking-tight">
-                    {completionRate}%
+                    {stats.stats?.completionRate ?? 0}%
                   </div>
                   <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
                     Done
@@ -373,7 +359,7 @@ export default function Dashboard() {
                         </div>
                       </div>
                     ))
-                : stats.recentActivities?.slice(0, 5).map((activity: any) => (
+                : stats.activities?.map((activity: any) => (
                     <div key={activity.id} className="flex gap-3 group">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white text-xs font-medium shrink-0 shadow-sm">
                         {activity.user.avatar}

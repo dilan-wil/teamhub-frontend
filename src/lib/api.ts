@@ -221,7 +221,7 @@ export const activitiesApi = {
 
 export const dashboardApi = {
   getStats: async () => {
-    const res = await api.get("/dashboard");
+    const res = await api.get("/dashboard/my");
     return res.data;
   },
 };
