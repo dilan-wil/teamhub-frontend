@@ -7,7 +7,7 @@ import { PageTransition } from "@/components/page-transition";
 import { usePathname } from "next/navigation";
 import { useParams, useRouter } from "next/navigation";
 import {
-  AvatarGroup,
+  MyAvatarGroup,
   StatusBadge,
   PriorityBadge,
 } from "@/components/ui-components";
@@ -60,18 +60,19 @@ import {
 } from "@/components/dialogs/task-dialog";
 import { EditProjectDialog } from "@/components/dialogs/project-dialog";
 import { AddMemberToProjectDialog } from "@/components/dialogs/member-dialog";
-import { Project, Task } from "@/lib/types";
+import { Project, Task, User } from "@/lib/types";
 import Link from "next/link";
 import { projectMembersApi, projectsApi, tasksApi } from "@/lib/api";
+import { toast } from "@/components/ui/toast";
 
 const TABS = ["overview", "tasks", "members", "settings"] as const;
 type Tab = (typeof TABS)[number];
 
 const STATUS_COLORS: Record<string, string> = {
-  todo: "bg-slate-500",
-  "in-progress": "bg-blue-500",
-  review: "bg-amber-500",
-  done: "bg-emerald-500",
+  TODO: "bg-slate-500",
+  "IN_PROGRESS": "bg-blue-500",
+  REVIEW: "bg-amber-500",
+  DONE: "bg-emerald-500",
 };
 
 function DeleteConfirmDialog({
@@ -126,6 +127,7 @@ export default function ProjectDetail() {
   const router = useRouter()
   const [project, setProject] = useState<Project | null>(null)
   const [tasks, setTasks] = useState<Task[]>([])
+  const [members, setMembers] = useState<any[]>([])
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [showEditProject, setShowEditProject] = useState(false);
   const [showCreateTask, setShowCreateTask] = useState(false);
@@ -142,18 +144,36 @@ export default function ProjectDetail() {
   const [deleteTaskPending, setDeleteTaskPending] = useState(false)
   const [deleteProjectPending, setDeleteProjectPending] = useState(false)
   const [updateProjectPending, setUpdateProjectPending] = useState(false)
+  const [changeTask, setChangeTask] = useState(false)
+  const [changeMember, setChangeMember] = useState(false)
 
   useEffect(() => {
-    console.log(id)
     setProjectLoading(true)
     async function getProject(){
       const proj = await projectsApi.findOne(id)
-      console.log(proj)
       setProject(proj)
       setProjectLoading(false)
     }
     getProject()
-  }, [])
+  }, [id])
+
+  useEffect(() => {
+    setTasksLoading(true)
+    async function getTasks(){
+      const t = await tasksApi.findProjectTasks(id)
+      setTasks(t)
+      setTasksLoading(false)
+    }
+    getTasks()
+  }, [id, changeTask])
+
+   useEffect(() => {
+    async function getMembers(){
+      const m = await projectMembersApi.findByProject(id)
+      setMembers(m)
+    }
+    getMembers()
+  }, [id, changeMember])
 
   if (projectLoading) {
     return (
@@ -183,10 +203,10 @@ export default function ProjectDetail() {
   }
 
   const taskCounts = {
-    todo: tasks.filter((t) => t.status === "TODO").length,
-    "in-progress": tasks.filter((t) => t.status === "IN_PROGRESS").length,
-    review: tasks.filter((t) => t.status === "REVIEW").length,
-    done: tasks.filter((t) => t.status === "DONE").length,
+    TODO: tasks.filter((t) => t.status === "TODO").length,
+    "IN_PROGRESS": tasks.filter((t) => t.status === "IN_PROGRESS").length,
+    REVIEW: tasks.filter((t) => t.status === "REVIEW").length,
+    DONE: tasks.filter((t) => t.status === "DONE").length,
   };
 
   const filteredTasks = tasks.filter((t) => {
@@ -210,12 +230,23 @@ export default function ProjectDetail() {
       userId: userId,
       role: "MEMBER"
       })
-
+      toast.add({
+        title: "Member Added",
+        type: "success"
+      })
+      setChangeMember(!changeMember)
+  }
   const handleRemoveMember = async (memberId: string) => {
     await projectMembersApi.remove(
       project.id,
-     userId
+      memberId
     );
+
+      toast.add({
+        title: "Member Removed",
+        type: "success"
+      })
+      setChangeMember(!changeMember)
   };
 
   const handleDeleteProject = async () => {
@@ -226,6 +257,11 @@ export default function ProjectDetail() {
   const handleDeleteTask = async () => {
     if (!selectedTask) return;
     await tasksApi.remove(selectedTask.id);
+    setChangeTask(!changeTask)
+    toast.add({
+      title: "Task Deleted Successfully",
+      type: "success"
+    })
     setShowDeleteTask(false);
     setSelectedTask(null);
   };
@@ -261,14 +297,14 @@ export default function ProjectDetail() {
               {project.description}
             </p>
           </div>
-          <div className="flex gap-2 shrink-0">
+          {/* <div className="flex gap-2 shrink-0">
             <button
               onClick={() => setShowEditProject(true)}
               className="bg-white text-gray-900 px-4 py-2 rounded-xl text-sm font-semibold hover:scale-95 transition-transform shadow-sm flex items-center gap-2"
             >
               <Pencil className="w-4 h-4" /> Edit
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -279,13 +315,13 @@ export default function ProjectDetail() {
             icon: CheckSquare,
             color: "text-primary bg-primary/10",
             label: "Progress",
-            value: `${project.progress}%`,
+            value: `${tasks.filter((task: Task) => task.status === "DONE").length/tasks.length*100}%`,
           },
           {
             icon: Users,
             color: "text-emerald-600 bg-emerald-500/10",
             label: "Team",
-            value: `${project.members?.length ?? 0} members`,
+            value: `${members?.length ?? 0} members`,
           },
           {
             icon: Clock,
@@ -363,7 +399,7 @@ export default function ProjectDetail() {
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-base font-bold">Overall Progress</h3>
                     <span className="text-2xl font-bold text-primary">
-                      {project.progress}%
+                      {tasks.filter((task: Task) => task.status === "DONE").length/tasks.length*100}%
                     </span>
                   </div>
                   <div className="h-3 w-full bg-muted rounded-full overflow-hidden">
@@ -373,12 +409,12 @@ export default function ProjectDetail() {
                         project.gradient,
                       )}
                       initial={{ width: 0 }}
-                      animate={{ width: `${project.progress}%` }}
+                      animate={{ width: `${tasks.filter((task: Task) => task.status === "DONE").length/tasks.length*100}%` }}
                       transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
                     />
                   </div>
                   <div className="flex gap-4 mt-4">
-                    {(["todo", "in-progress", "review", "done"] as const).map(
+                    {(["TODO", "IN_PROGRESS", "REVIEW", "DONE"] as const).map(
                       (s) => (
                         <div
                           key={s}
@@ -391,7 +427,7 @@ export default function ProjectDetail() {
                             )}
                           />
                           <span className="capitalize">
-                            {s === "in-progress" ? "In Progress" : s}
+                            {s === "IN_PROGRESS" ? "In Progress" : s}
                           </span>
                           <span className="font-semibold text-foreground">
                             {taskCounts[s]}
@@ -450,7 +486,7 @@ export default function ProjectDetail() {
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
                             <PriorityBadge priority={task.priority} />
-                            <AvatarGroup users={[task.assignee!]} max={1} />
+                            <MyAvatarGroup users={[task.assignee!]} max={1} />
                           </div>
                         </div>
                       ))}
@@ -472,7 +508,7 @@ export default function ProjectDetail() {
                     </button>
                   </div>
                   <div className="space-y-3">
-                    {project.members?.map((member) => (
+                    {members?.map((member) => (
                       <div key={member.id} className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-purple-500 text-primary-foreground flex items-center justify-center text-xs font-bold shrink-0">
                           {member.user?.avatar}
@@ -487,7 +523,7 @@ export default function ProjectDetail() {
                         </div>
                       </div>
                     ))}
-                    {project.members?.length === 0 && (
+                    {members?.length === 0 && (
                       <p className="text-sm text-muted-foreground text-center py-4">
                         No members yet.
                       </p>
@@ -531,10 +567,10 @@ export default function ProjectDetail() {
                     className="h-9 bg-background border border-border/50 rounded-xl px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                   >
                     <option value="all">All</option>
-                    <option value="todo">To Do</option>
-                    <option value="in-progress">In Progress</option>
-                    <option value="review">Review</option>
-                    <option value="done">Done</option>
+                    <option value="TODO">To Do</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="REVIEW">Review</option>
+                    <option value="DONE">Done</option>
                   </select>
                 </div>
                 <button
@@ -674,8 +710,8 @@ export default function ProjectDetail() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
-                  {project.members?.length} member
-                  {project.members?.length !== 1 ? "s" : ""} in this project
+                  {members?.length} member
+                  {members?.length !== 1 ? "s" : ""} in this project
                 </p>
                 <button
                   onClick={() => setShowAddMember(true)}
@@ -685,7 +721,7 @@ export default function ProjectDetail() {
                 </button>
               </div>
 
-              {project.members?.length === 0 ? (
+              {members?.length === 0 ? (
                 <div className="bg-card border border-border/50 rounded-3xl py-16 flex flex-col items-center text-center">
                   <Users className="w-10 h-10 text-muted-foreground/40 mb-3" />
                   <p className="text-sm text-muted-foreground mb-3">
@@ -700,7 +736,7 @@ export default function ProjectDetail() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {project.members?.map((member) => (
+                  {members?.map((member) => (
                     <motion.div
                       key={member.id}
                       layout
@@ -752,10 +788,7 @@ export default function ProjectDetail() {
           {activeTab === "settings" && (
             <ProjectSettingsTab
               project={project}
-              onSaved={() => {
-                setSavedSettings(true);
-                setTimeout(() => setSavedSettings(false), 2500);
-              }}
+              onSaved={setProject}
               savedSettings={savedSettings}
               onDeleteRequest={() => setShowDeleteProject(true)}
             />
@@ -775,12 +808,14 @@ export default function ProjectDetail() {
         open={showCreateTask}
         onOpenChange={setShowCreateTask}
         defaultProjectId={project.id}
+        change={() => {setChangeTask(!changeTask)}}
       />
       {showEditTask && selectedTask && (
         <EditTaskDialog
           task={selectedTask}
           open={showEditTask}
           onOpenChange={setShowEditTask}
+          change={() => {setChangeTask(!changeTask)}}
         />
       )}
       <DeleteConfirmDialog
@@ -827,10 +862,11 @@ function ProjectSettingsTab({
   onDeleteRequest,
 }: {
   project: any;
-  onSaved: () => void;
+  onSaved: any;
   savedSettings: boolean;
   onDeleteRequest: () => void;
 }) {
+  const [updateProjectPending, setUpdateProjectPending] = useState(false)
   const {
     register,
     handleSubmit,
@@ -860,10 +896,11 @@ function ProjectSettingsTab({
         ? new Date(project.dueDate).toISOString().split("T")[0]
         : "",
     });
-  }, [project.id]);
+  }, [project]);
 
   const onSubmit = async (values: SettingsValues) => {
-    await projectsApi.update(
+    setUpdateProjectPending(true)
+    const newProject = await projectsApi.update(
       project.id,
       {
         name: values.name,
@@ -873,8 +910,9 @@ function ProjectSettingsTab({
         dueDate: new Date(values.dueDate).toISOString(),
       
     })
-    onSaved();
+    onSaved(newProject);
     reset(values);
+    setUpdateProjectPending(false)
   };
 
   return (
@@ -1006,4 +1044,4 @@ function ProjectSettingsTab({
       </div>
     </div>
   );
-}}
+}

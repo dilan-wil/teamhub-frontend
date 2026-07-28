@@ -125,7 +125,7 @@ function ProjectForm({
             control={control}
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="rounded-xl">
+                <SelectTrigger className="w-full rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -146,7 +146,7 @@ function ProjectForm({
             control={control}
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="rounded-xl">
+                <SelectTrigger className="w-full rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -293,8 +293,7 @@ export function CreateProjectDialog({
           }),
         ),
       );
-      change(true)
-      change(false)
+      change()
       onOpenChange(false);
     } catch (error) {
       console.log(error);
@@ -330,11 +329,15 @@ export function EditProjectDialog({
   project,
   open,
   onOpenChange,
+  change,
 }: {
   project: Project;
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  change?: any;
 }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const defaults: z.infer<typeof schema> = {
     name: project.name,
     description: project.description,
@@ -348,25 +351,24 @@ export function EditProjectDialog({
   };
 
   const handleSubmit = async (values: z.infer<typeof schema>) => {
-   
-    // await mutateAsync({
-    //   id: project.id,
-    //   data: {
-    //     name: values.name,
-    //     description: values.description,
-    //     status: values.status,
-    //     priority: values.priority,
-    //     dueDate: new Date(values.dueDate).toISOString(),
-    //     gradient: values.gradient,
-    //     members,
-    //   },
-    // });
+    setIsSubmitting(true)
+    await projectsApi.update(
+          project.id,
+          {
+            name: values.name,
+            description: values.description,
+            status: values.status,
+            priority: values.priority,
+            dueDate: new Date(values.dueDate).toISOString(),
+        })
+        change()
+    setIsSubmitting(false)
     onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg rounded-3xl">
+      <DialogContent className="sm:max-w-lg rounded-3xl max-h-[90vh] overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -381,7 +383,7 @@ export function EditProjectDialog({
             defaultValues={defaults}
             onSubmit={handleSubmit}
             onCancel={() => onOpenChange(false)}
-            isSubmitting={true}
+            isSubmitting={isSubmitting}
           />
         </motion.div>
       </DialogContent>

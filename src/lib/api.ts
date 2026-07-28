@@ -135,6 +135,11 @@ export const tasksApi = {
     return res.data;
   },
 
+  findProjectTasks: async (projectId: string) => {
+    const res = await api.get<Task[]>(`/tasks/project/${projectId}`);
+    return res.data;
+  },
+
   findOne: async (id: string) => {
     const res = await api.get<Task>(`/tasks/${id}`);
     return res.data;
@@ -175,6 +180,11 @@ export const notificationsApi = {
 
   findAll: async () => {
     const res = await api.get("/notifications");
+    return res.data;
+  },
+
+  findAllUnread: async () => {
+    const res = await api.get("/notifications/unread");
     return res.data;
   },
 

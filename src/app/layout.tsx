@@ -25,8 +25,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ThemeProvider defaultTheme="system">
-      <AuthProvider>{children}</AuthProvider>
-    </ThemeProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <ThemeProvider defaultTheme="system">
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

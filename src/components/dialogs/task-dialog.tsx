@@ -25,6 +25,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Project, Task, User } from "@/lib/types";
 import { projectsApi, tasksApi, usersApi } from "@/lib/api";
+import { toast } from "../ui/toast";
 
 const ALL_TAGS = [
   "frontend",
@@ -212,14 +213,14 @@ function TaskForm({
             control={control}
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="rounded-xl">
+                <SelectTrigger className="w-full rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="todo">To Do</SelectItem>
-                  <SelectItem value="in-progress">In Progress</SelectItem>
-                  <SelectItem value="review">Review</SelectItem>
-                  <SelectItem value="done">Done</SelectItem>
+                  <SelectItem value="TODJO">To Do</SelectItem>
+                  <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                  <SelectItem value="REVIEW">Review</SelectItem>
+                  <SelectItem value="DONE">Done</SelectItem>
                 </SelectContent>
               </Select>
             )}
@@ -233,7 +234,7 @@ function TaskForm({
             control={control}
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="rounded-xl">
+                <SelectTrigger className="w-full rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -284,11 +285,11 @@ function TaskForm({
           control={control}
           render={({ field }) => (
             <Select
-              value={field.value}
+              value={projects.find((project) => project.id ===field.value)?.name ?? field.value}
               onValueChange={field.onChange}
               disabled={!!lockedProjectId}
             >
-              <SelectTrigger className="rounded-xl">
+              <SelectTrigger className="w-full rounded-xl">
                 <SelectValue placeholder="Select project" />
               </SelectTrigger>
               <SelectContent>
@@ -362,12 +363,14 @@ export function CreateTaskDialog({
   open,
   onOpenChange,
   defaultProjectId,
+  change,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   defaultProjectId?: string;
+  change?: any;
 }) {
-  const [isPending, setIsPending] = useState(false)
+  const [isPending, setIsPending] = useState(false);
   const defaults: FormValues = {
     title: "",
     description: "",
@@ -381,14 +384,23 @@ export function CreateTaskDialog({
   };
 
   const handleSubmit = async (values: FormValues) => {
-    try{
-      setIsPending(true)
-      await tasksApi.create(values)
-    onOpenChange(false);
-    } catch(error){
-      console.log(error)
-    } finally{
-      setIsPending(false)
+    try {
+      setIsPending(true);
+      await tasksApi.create(values);
+      onOpenChange(false);
+      change();
+      toast.add({
+        title: "Task added",
+        type: "success",
+      });
+    } catch (error: any) {
+      console.log(error.message);
+      toast.add({
+        title: "Error",
+        type: "error",
+      });
+    } finally {
+      setIsPending(false);
     }
   };
 
@@ -420,11 +432,15 @@ export function EditTaskDialog({
   task,
   open,
   onOpenChange,
+  change,
 }: {
   task: Task;
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  change?: any;
 }) {
+  const [isPending, setIsPending] = useState(false);
+
   const defaults: FormValues = {
     title: task.title,
     description: task.description,
@@ -440,21 +456,24 @@ export function EditTaskDialog({
   };
 
   const handleSubmit = async (values: FormValues) => {
-    // await mutateAsync({
-    //   id: task.id,
-    //   data: {
-    //     title: values.title,
-    //     description: values.description ?? "",
-    //     status: values.status,
-    //     priority: values.priority,
-    //     assignee,
-    //     project,
-    //     dueDate: new Date(values.dueDate).toISOString(),
-    //     estimatedHours: values.estimatedHours,
-    //     tags: values.tags,
-    //   },
-    // });
-    onOpenChange(false);
+    try {
+      setIsPending(true);
+      await tasksApi.update(task.id, values);
+      change();
+      toast.add({
+        title: "Task updated",
+        type: "success",
+      });
+      onOpenChange(false);
+    } catch (error: any) {
+      console.log(error.message);
+      toast.add({
+        title: "Error",
+        type: "error",
+      });
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (
@@ -472,7 +491,7 @@ export function EditTaskDialog({
             defaultValues={defaults}
             onSubmit={handleSubmit}
             onCancel={() => onOpenChange(false)}
-            isSubmitting={false}
+            isSubmitting={isPending}
           />
         </motion.div>
       </DialogContent>

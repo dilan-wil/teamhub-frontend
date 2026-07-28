@@ -22,7 +22,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
-import { AvatarGroup, PriorityBadge } from "@/components/ui-components";
+import { MyAvatarGroup, PriorityBadge } from "@/components/ui-components";
 import { format } from "date-fns";
 import { Calendar, MoreHorizontal, Plus } from "lucide-react";
 import { tasksApi } from "@/lib/api";
@@ -80,7 +80,7 @@ function KanbanCard({
       </div>
 
       <div className="flex justify-between items-center mt-auto">
-        <AvatarGroup users={[task.assignee!]} max={1} />
+        <MyAvatarGroup users={[task.assignee!]} max={1} />
         <div className="flex items-center gap-1 text-xs text-muted-foreground font-medium">
           <Calendar className="w-3.5 h-3.5" />
           {format(new Date(task.dueDate), "MMM d")}

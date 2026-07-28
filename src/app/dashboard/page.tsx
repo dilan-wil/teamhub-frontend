@@ -31,11 +31,6 @@ import {
   Cell,
 } from "recharts";
 import { format, subDays } from "date-fns";
-import {
-  AvatarGroup,
-  StatusBadge,
-  PriorityBadge,
-} from "@/components/ui-components";
 import { useAuth } from "@/contexts/auth-context";
 import { dashboardApi, projectsApi, usersApi } from "@/lib/api";
 import { Project, Task, User } from "@/lib/types";

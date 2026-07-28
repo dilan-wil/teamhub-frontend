@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { PageTransition } from "@/components/page-transition";
 import { TableSkeleton } from "@/components/loading";
 import {
-  AvatarGroup,
+  MyAvatarGroup,
   StatusBadge,
   PriorityBadge,
 } from "@/components/ui-components";

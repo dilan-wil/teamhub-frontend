@@ -108,7 +108,7 @@ export default function Projects() {
         }
       </div>
 
-      <CreateProjectDialog open={showCreate} onOpenChange={setShowCreate} change={setChange}/>
+      <CreateProjectDialog open={showCreate} onOpenChange={setShowCreate} change={() => setChange(!change)}/>
     </PageTransition>
   );
 }

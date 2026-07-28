@@ -1,13 +1,17 @@
 import React from 'react';
 import { Project } from '@/lib/types';
 import { Calendar, MoreHorizontal, CheckCircle2 } from 'lucide-react';
-import { AvatarGroup, StatusBadge } from './ui-components';
+import { MyAvatarGroup, StatusBadge } from './ui-components';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { cn } from '../lib/utils';
 import Link from 'next/link';
 
 export function ProjectCard({ project }: { project: Project }) {
+  const totalTasks = project._count.tasks
+  const undoneTasks = project._count.notCompletedTasks
+  const completedTasks = project._count.completedTasks
+  const progress = totalTasks > 0 ? undoneTasks/completedTasks*100 : 0
   return (
     <Link href={`/dashboard/projects/${project.id}`}>
       <motion.div 
@@ -33,25 +37,25 @@ export function ProjectCard({ project }: { project: Project }) {
             <div className="flex justify-between items-center text-xs font-medium">
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>{project.tasks?.filter(task => task.status !== "DONE").length} tasks</span>
+                <span>{undoneTasks || 0} tasks</span>
               </div>
-              <span className="text-foreground">{project.progress}%</span>
+              <span className="text-foreground">{progress}%</span>
             </div>
             
             <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
               <motion.div 
                 initial={{ width: 0 }}
-                animate={{ width: `${project.progress}%` }}
+                animate={{ width: `${progress}%` }}
                 transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
                 className={cn(
                   "h-full rounded-full",
-                  project.progress === 100 ? "bg-emerald-500" : "bg-primary"
+                  progress === 100 ? "bg-emerald-500" : "bg-primary"
                 )} 
               />
             </div>
             
             <div className="flex justify-between items-center pt-2">
-              <AvatarGroup users={project.members?.map(member => member.user!).filter(Boolean) || []} max={3} />
+              <MyAvatarGroup users={project.members?.map(member => member.user!).filter(Boolean) || []} max={3} />
               
               <div className="flex items-center gap-2">
                 <StatusBadge status={project.status} />

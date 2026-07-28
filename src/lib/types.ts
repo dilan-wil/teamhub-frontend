@@ -63,6 +63,7 @@ export interface Project {
   activities?: Activity[];
   createdAt: string;
   updatedAt: string;
+  _count: any;
 }
 
 // =======================

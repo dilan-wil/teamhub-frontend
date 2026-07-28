@@ -1,12 +1,23 @@
-"use client"
+"use client";
 import { useAuth } from "@/contexts/auth-context";
 import { Search, Bell, Command } from "lucide-react";
 import Link from "next/link";
+import { MyAvatar } from "./ui-components";
+import { useEffect, useState } from "react";
+import { Notification } from "@/lib/types";
+import { notificationsApi } from "@/lib/api";
 
 export function Navbar() {
-  const {user} = useAuth()
-  // const notifications = mockNotifications;
-  // const unreadCount = notifications?.filter((n) => !n.read).length || 0;
+  const { user } = useAuth();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  useEffect(() => {
+    async function getUnreadNotifications(){
+      const notifs = await notificationsApi.findAllUnread()
+      setNotifications(notifs)
+    }
+    getUnreadNotifications()
+  }, [])
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between px-8 py-4 bg-background/60 backdrop-blur-xl border-b border-border/50">
@@ -29,18 +40,13 @@ export function Navbar() {
           className="relative p-2 rounded-xl text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
         >
           <Bell className="w-5 h-5" />
-          {/* {unreadCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full border-2 border-background" />
-          )} */}
+          {notifications.length > 0 && (
+            <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-destructive rounded-full border-2 border-background" />
+          )}
         </Link>
 
         {user ? (
-          <Link
-            href="/dashboard/profile"
-            className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-purple-500 flex items-center justify-center text-white font-medium text-xs shadow-sm cursor-pointer hover:scale-105 transition-transform"
-          >
-            {user.avatar}
-          </Link>
+          <MyAvatar user={user} />
         ) : (
           <div className="w-8 h-8 rounded-full bg-muted animate-pulse" />
         )}

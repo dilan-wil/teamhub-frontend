@@ -326,7 +326,7 @@ export function AddMemberToProjectDialog({
         onOpenChange(v);
       }}
     >
-      <DialogContent className="sm:max-w-sm rounded-3xl">
+      <DialogContent className="sm:max-w-sm rounded-3xl max-h-[90vh] overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}

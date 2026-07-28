@@ -18,6 +18,7 @@ import { cn } from "../lib/utils";
 import { motion } from "framer-motion";
 import { useTheme } from "@/contexts/theme-provider";
 import { useAuth } from "@/contexts/auth-context";
+import { MyAvatar } from "./ui-components";
 
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
@@ -116,9 +117,7 @@ export function Sidebar() {
       <div className="px-4 mt-auto pt-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           {user ? (
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-purple-500 flex items-center justify-center text-white font-medium shadow-sm">
-              {user.avatar}
-            </div>
+            <MyAvatar user={user}/>
           ) : (
             <div className="w-10 h-10 rounded-full bg-muted animate-pulse" />
           )}
