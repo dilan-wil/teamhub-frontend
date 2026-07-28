@@ -315,7 +315,7 @@ export default function ProjectDetail() {
             icon: CheckSquare,
             color: "text-primary bg-primary/10",
             label: "Progress",
-            value: `${tasks.filter((task: Task) => task.status === "DONE").length/tasks.length*100}%`,
+            value: `${tasks.length > 0 ? tasks.filter((task: Task) => task.status === "DONE").length/tasks.length*100 : 0}%`,
           },
           {
             icon: Users,
@@ -399,7 +399,7 @@ export default function ProjectDetail() {
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-base font-bold">Overall Progress</h3>
                     <span className="text-2xl font-bold text-primary">
-                      {tasks.filter((task: Task) => task.status === "DONE").length/tasks.length*100}%
+                      {tasks.length > 0 ? tasks.filter((task: Task) => task.status === "DONE").length/tasks.length*100 : 0}%
                     </span>
                   </div>
                   <div className="h-3 w-full bg-muted rounded-full overflow-hidden">
@@ -808,14 +808,14 @@ export default function ProjectDetail() {
         open={showCreateTask}
         onOpenChange={setShowCreateTask}
         defaultProjectId={project.id}
-        change={() => {setChangeTask(!changeTask)}}
+        onChange={() => {setChangeTask(!changeTask)}}
       />
       {showEditTask && selectedTask && (
         <EditTaskDialog
           task={selectedTask}
           open={showEditTask}
           onOpenChange={setShowEditTask}
-          change={() => {setChangeTask(!changeTask)}}
+          onChange={() => {setChangeTask(!changeTask)}}
         />
       )}
       <DeleteConfirmDialog

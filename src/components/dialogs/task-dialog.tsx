@@ -285,7 +285,10 @@ function TaskForm({
           control={control}
           render={({ field }) => (
             <Select
-              value={projects.find((project) => project.id ===field.value)?.name ?? field.value}
+              value={
+                projects.find((project) => project.id === field.value)?.name ??
+                field.value
+              }
               onValueChange={field.onChange}
               disabled={!!lockedProjectId}
             >
@@ -363,12 +366,12 @@ export function CreateTaskDialog({
   open,
   onOpenChange,
   defaultProjectId,
-  change,
+  onChange,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   defaultProjectId?: string;
-  change?: any;
+  onChange?: any;
 }) {
   const [isPending, setIsPending] = useState(false);
   const defaults: FormValues = {
@@ -388,7 +391,9 @@ export function CreateTaskDialog({
       setIsPending(true);
       await tasksApi.create(values);
       onOpenChange(false);
-      change();
+      if (onChange) {
+        onChange();
+      }
       toast.add({
         title: "Task added",
         type: "success",
@@ -396,7 +401,7 @@ export function CreateTaskDialog({
     } catch (error: any) {
       console.log(error.message);
       toast.add({
-        title: "Error",
+        title: error.message,
         type: "error",
       });
     } finally {
@@ -432,12 +437,12 @@ export function EditTaskDialog({
   task,
   open,
   onOpenChange,
-  change,
+  onChange,
 }: {
   task: Task;
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  change?: any;
+  onChange?: any;
 }) {
   const [isPending, setIsPending] = useState(false);
 
@@ -459,7 +464,9 @@ export function EditTaskDialog({
     try {
       setIsPending(true);
       await tasksApi.update(task.id, values);
-      change();
+      if (onChange) {
+        onChange();
+      }
       toast.add({
         title: "Task updated",
         type: "success",

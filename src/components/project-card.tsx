@@ -11,7 +11,7 @@ export function ProjectCard({ project }: { project: Project }) {
   const totalTasks = project._count.tasks
   const undoneTasks = project._count.notCompletedTasks
   const completedTasks = project._count.completedTasks
-  const progress = totalTasks > 0 ? undoneTasks/completedTasks*100 : 0
+  const progress = totalTasks > 0 ? completedTasks/totalTasks*100 : 0
   return (
     <Link href={`/dashboard/projects/${project.id}`}>
       <motion.div 

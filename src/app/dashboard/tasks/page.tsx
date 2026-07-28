@@ -38,6 +38,7 @@ import {
   EditTaskDialog,
 } from "@/components/dialogs/task-dialog";
 import { tasksApi } from "@/lib/api";
+import { toast } from "@/components/ui/toast";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -45,15 +46,25 @@ function DeleteConfirm({
   task,
   open,
   onOpenChange,
+  onChange
 }: {
   task: Task | null;
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  onChange?: any;
 }) {
   const [isPending, setIsPending] = useState(false);
   const confirm = async () => {
+    setIsPending(true)
     if (!task) return;
+    await tasksApi.remove(task.id)
+    onChange()
+    toast.add({
+      title: "Task Deleted Successfully",
+      type: "success"
+    })
     onOpenChange(false);
+    setIsPending(false)
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -101,6 +112,7 @@ export default function Tasks() {
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [selected, setSelected] = useState<Task | null>(null);
+  const [change, setChange] = useState(true)
 
   useEffect(() => {
     async function getMyTasks(){
@@ -108,7 +120,7 @@ export default function Tasks() {
       setTasks(myTasks)
     }
     getMyTasks()
-  }, [])
+  }, [change])
 
   const filtered = tasks.filter((t) => {
     const matchSearch =
@@ -343,11 +355,12 @@ export default function Tasks() {
         </div>
       </div>
 
-      <CreateTaskDialog open={showCreate} onOpenChange={setShowCreate} />
+      <CreateTaskDialog onChange={() => setChange(!change)} open={showCreate} onOpenChange={setShowCreate} />
       {selected && showEdit && (
         <EditTaskDialog
           task={selected}
           open={showEdit}
+          onChange={() => setChange(!change)}
           onOpenChange={setShowEdit}
         />
       )}
@@ -355,6 +368,7 @@ export default function Tasks() {
         task={selected}
         open={showDelete}
         onOpenChange={setShowDelete}
+        onChange={() => setChange(!change)}
       />
     </PageTransition>
   );
